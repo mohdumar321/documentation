@@ -1,0 +1,12 @@
+oc new-project umarproj
+oc new-app . --name=word
+oc start-build word --from-dir=.
+oc expose service word
+
+https://github.com/mohdumar321/openshift-wordpress-developer-quickstart.git
+
+OPENSHIFT_APP_NAME
+OPENSHIFT_MYSQL_DB_USERNAME
+OPENSHIFT_MYSQL_DB_PASSWORD
+OPENSHIFT_MYSQL_DB_HOST
+OPENSHIFT_MYSQL_DB_PORT
