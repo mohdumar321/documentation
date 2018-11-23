@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jn-1
+  labels:
+    app: jn-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jn-1
+  template:
+    metadata:
+      labels:
+        app: jn-1
+    spec:
+      containers:
+      - name: jn-1
+        image: hadoop-test3
+        env:
+        - name: NNODE1_IP
+          value: nn1
+        - name: NNODE2_IP
+          value: nn2
+        - name: JN_IPS
+          value: jn-1:8485
+        - name: ZK_IPS
+          value: zk-1:2181
+        commands:
+        - sh
+        - -c
+        - /etc/bootstrap.sh -d journalnode
+        volumeMounts:
+        - name: journalnode
+          mountPath: /mnt/hadoop
+        volumes:
+      - name: journalnode
+        persistentVolumeClaim:
+        claimName: journalnode
