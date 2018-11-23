@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nn1
+  labels:
+    app: nn1
+spec:
+  replicas: 1
+  # serviceName: namenode
+  selector:
+    matchLabels:
+      app: nn1
+  template:
+    metadata:
+      labels:
+        app: nn1
+    spec:
+      initContainers:
+      - name: initnn1
+        image: mohdumar321/hadoop-test3
+        env:
+        - name: NNODE1_IP
+          value: nn1
+        - name: NNODE2_IP
+          value: nn2
+        - name: JN_IPS
+          value: jn-1:8485
+        - name: ZK_IPS
+          value: zk-1:2181
+        command:
+        - sh
+        - -c
+        - /etc/bootstrap.sh -d format
+        volumeMounts:
+        - name: namenode
+          mountPath: /mnt/hadoop
+      containers:
+      - name: nn1
+        image: mohdumar321/hadoop-test3
+        env:
+        - name: NNODE1_IP
+          value: nn1
+        - name: NNODE2_IP
+          value: nn2
+        - name: JN_IPS
+          value: jn-1:8485
+        - name: ZK_IPS
+          value: zk-1:2181
+        ports:
+        - name: namenode
+          containerPort: 50070
+        command:
+        - sh
+        - -c
+        - /etc/bootstrap.sh -d namenode
+        volumeMounts:
+        - name: namenode
+          mountPath: /mnt/hadoop
+      volumes:
+      - name: namenode
+        persistentVolumeClaim:
+          claimName: namenode
+

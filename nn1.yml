@@ -1,21 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jn-1
+  name: nn1
   labels:
-    app: jn-1
+    app: nn1
 spec:
   replicas: 1
+  # serviceName: namenode
   selector:
     matchLabels:
-      app: jn-1
+      app: nn1
   template:
     metadata:
       labels:
-        app: jn-1
+        app: nn1
     spec:
       containers:
-      - name: jn-1
+      - name: nn1
         image: mohdumar321/hadoop-test3
         env:
         - name: NNODE1_IP
@@ -26,14 +27,18 @@ spec:
           value: jn-1:8485
         - name: ZK_IPS
           value: zk-1:2181
+        ports:
+        - name: namenode
+          containerPort: 50070
         command:
         - sh
         - -c
-        - /etc/bootstrap.sh -d journalnode
+        - /etc/bootstrap.sh -d namenode
         volumeMounts:
-        - name: journalnode
+        - name: namenode
           mountPath: /mnt/hadoop
       volumes:
-      - name: journalnode
+      - name: namenode
         persistentVolumeClaim:
-          claimName: journalnode
+          claimName: namenode
+
