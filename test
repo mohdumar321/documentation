@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: namenode
+  labels:
+    service: namenode-primary
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: namenode-primary
+  labels:
+    app: nn1
+spec:
+  ports:
+  - port: 50070
+    targetport: 50070
+  type: NodePort
+  selector:
+    app: nn1
+---
+
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: nn1
+  labels:
+    app: nn1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nn1
+  template:
+    metadata:
+      labels:
+        app: nn1
+    spec:
+      containers:
+      - name: nn1 
+        image: bastipaeltz/hadoop-ha-docker 
+        ports:
+        - containerPort: 50070
+        env:
+        - name: NNODE1_IP
+          value: nn1
+        - name: NNODE2_IP
+          value: nn2
+		- name: JN_IPS
+		  value: jn-1:8485
+		- name: ZK_IPS
+		  value: zk-1:2181
+		volumeMounts:
+        - name: namenode
+          mountPath: /mnt/hadoop
+	volumes:
+      - name: namenode
+        persistentVolumeClaim:
+        claimName: namenode
